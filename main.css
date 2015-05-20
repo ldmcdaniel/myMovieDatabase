@@ -1,0 +1,51 @@
+body {
+  background-color: black;
+  color: white;
+  text-align: center;
+  margin: auto;
+  padding: 20px;
+}
+.left {
+  margin: auto;
+  min-height: 600px;
+  background-color: black;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.right {
+  margin: auto;
+  min-height: 600px;
+  background-color: black;
+  padding: 20px;
+  box-sizing: border-box;
+
+}
+nav {
+  text-align: center;
+  width: 60%;
+  margin: auto;
+}
+
+table {
+  width: 90%;
+  margin: auto;
+  border: 1px solid white;
+}
+button:hover {
+  background-color: yellow;
+}
+
+.poster {
+  width: 50px;
+  height: 60px;
+}
+
+.movie-info {
+  width: 50%;
+  float: left;
+}
+
+.movie-poster {
+  width: 50%;
+  float: right;
+}
