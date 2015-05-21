@@ -1,0 +1,53 @@
+body {
+  margin: auto;
+  padding: 0;
+}
+table {
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+th {
+  text-align: center;
+}
+.poster {
+  width: 90px;
+  height: 120px;
+}
+.movie-info {
+  width: 65%;
+  float: left;
+}
+.movie-poster {
+  width: 30%;
+  float: right;
+  padding-top: 20px;
+  text-align: right;
+  padding: 20px;
+}
+.container {
+  margin: auto;
+  width: 80%;
+}
+.rating {
+  border: 1px solid black;
+  margin-left: 60px;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+.rating,
+.title {
+  display: inline-block;
+}
+.login-welcome {
+  width: 55%;
+  display: inline-block;
+  text-align: right;
+  margin-right: 0;
+}
+.movie-lookup {
+  width: 40%;
+  display: inline-block;
+  text-align: left;
+  margin-left: 0;
+  }

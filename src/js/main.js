@@ -14,10 +14,13 @@ $(".submit").click(function() {
   var url = API_URL + $input + "&y=&plot=short&r=json";
   $.get(url, function(data) {
     $(".movie-info")
-      .append("<h2>\"" + data.Title + "\"</h2>")
-      .append("<p>Plot: " + data.Plot + "</p>")
-      .append("<h3>Released in " + data.Year + "</h3>")
-      .append("<h3> Rated: " + data.Rated + "</h3>");
+      .append("<h2 class='title'>\"" + data.Title + "\"</h2><h3 class='rating'>" + data.Rated + "</h3")
+      .append("<hr>")
+      .append("<h4>Plot: " + data.Plot + "</h4>")
+      .append("<h5>Actors: " + data.Actors + "</h5>")
+      .append("<h5>Genre: " + data.Genre + "</h5>")
+      .append("<h5>Released on " + data.Released + "</h5>")
+      .append("<h5>IMDB Rating: " + data.imdbRating + "</h5>")
     $(".movie-poster")
       .append("<img src='" + data.Poster + "'</img>");
     $(".addMovie").show();
@@ -48,7 +51,7 @@ function addMovieData(data, id) {
     .append("<td>" + data.Title + "</td>")
     .append("<td>" + data.Year + "</td>")
     .append("<td>" + data.Rated + "</td>")
-    .append("</td><td><button type='text' class='delete'>X</button></td></tr>");
+    .append("</td><td><button type='text' class='btn btn-warning delete'>Remove</button></td></tr>");
 }
 /*------ Delete data from Firebase & Table -------*/
 
