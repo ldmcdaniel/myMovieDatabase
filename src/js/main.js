@@ -1,5 +1,6 @@
 var API_URL = "http://www.omdbapi.com/?t=";
-var FIREBASE_URL = "https://nssmovies.firebaseio.com/movies.json"
+var FIREBASE_URL = "https://nssmovies.firebaseio.com/movies.json";
+var fb = new Firebase("https://nssmovies.firebaseio.com/");
 $(".addMovie").hide();
 //$(".movie-collection").hide();
 
@@ -76,3 +77,49 @@ $.get(FIREBASE_URL, function(data) {
     addMovieData(data[id], id);
   });
 });
+
+/*------ Login to Firebase -------*/
+
+function doLogin (email, password, cb) {
+  fb.authWithPassword({
+    email: email,
+    password: password
+  }, function (err, authData) {
+    if (err) {
+      alert(err.toString());
+    } else {
+      alert("It is working!");
+      window.location = '/';
+
+      saveAuthData(authData);
+      typeof cb === 'function' && cb(authData);
+    }
+  });
+}
+
+$('.login-welcome form').submit(function () {
+  var email = $('.login-welcome input[type="email"]').val();
+  var password = $('.login-welcome input[type="password"]').val();
+
+  doLogin(email, password);
+  event.preventDefault();
+});
+
+function saveAuthData (authData) {
+  $.ajax({
+    method: 'PUT',
+    url: `${"https://nssmovies.firebaseio.com/"}/users/${authData.uid}/profile.json`,
+    data: JSON.stringify(authData)
+  });
+}
+
+function clearLoginForm () {
+  $('input[type="email"]').val('');
+  $('input[type="password"]').val('');
+}
+
+$('.logout').click(function () {
+  fb.unauth();
+  window.location = '/login.html'
+})
+
