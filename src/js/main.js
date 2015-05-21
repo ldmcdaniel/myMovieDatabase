@@ -76,6 +76,3 @@ $.get(FIREBASE_URL, function(data) {
     addMovieData(data[id], id);
   });
 });
-
-
-

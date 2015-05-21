@@ -2,7 +2,7 @@ header
   .container
     .movie-lookup
       form.form-inline
-        input(type ="text", placeholder="Enter Movie Title" class="movie")
+        input(type ="text", placeholder="Enter Movie Title" class="form-control movie")
         button(type="button", class="btn btn-success submit", placeholder="Lookup") Lookup movie
     .login-welcome
       form.form-inline
@@ -10,7 +10,6 @@ header
           input(type="email", class="form-control", placeholder="Email")
         .form-group
           input(type="password", class="form-control", placeholder="Password")
-        button(type="text", class="btn btn-warning") Register
-        button(type="text", class="btn btn-success") Login
-        button(type="text", class="btn btn-danger") Reset Password
-
+        button(type="submit", class="btn btn-warning") Register
+        button(type="submit", class="btn btn-success") Login
+        button(type="submit", class="btn btn-danger") Reset Password
