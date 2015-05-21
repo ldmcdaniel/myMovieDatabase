@@ -90,7 +90,6 @@ function doLogin (email, password, cb) {
     } else {
       alert("It is working!");
       window.location = '/';
-
       saveAuthData(authData);
       typeof cb === 'function' && cb(authData);
     }
@@ -123,3 +122,31 @@ $('.logout').click(function () {
   window.location = '/login.html'
 })
 
+$('.register').click(function () {
+  var email = $('.login-welcome input[type="email"]').val();
+  var password = $('.login-welcome input[type="password"]').val();
+  fb.createUser({
+    email: email,
+    password: password
+  }, function (err, userData) {
+    if (err) {
+      alert(err.toString());
+    } else {
+      doLogin(email, password);
+    }
+  });
+  event.preventDefault();
+});
+
+$('.doResetPassword').click(function () {
+  var email = $('.onLoggedOut input[type="email"]').val();
+  fb.resetPassword({
+    email: email
+  }, function (err) {
+    if (err) {
+      alert(err.toString());
+    } else {
+      alert('Check your email!');
+    }
+  });
+});
