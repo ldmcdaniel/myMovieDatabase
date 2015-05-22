@@ -78,7 +78,7 @@ $.get(FIREBASE_URL, function(data) {
   });
 });
 
-/*------ Login to Firebase -------*/
+/*------ Login to Database -------*/
 
 function doLogin (email, password, cb) {
   fb.authWithPassword({
@@ -116,10 +116,14 @@ function clearLoginForm () {
   $('input[type="password"]').val('');
 }
 
+/*------ Logout of Database -------*/
+
 $('.logout').click(function () {
   fb.unauth();
   window.location = '/login.html'
 })
+
+/*------ Register new user -------*/
 
 $('.register').click(function () {
   var email = $('.login-welcome input[type="email"]').val();
@@ -137,6 +141,8 @@ $('.register').click(function () {
   event.preventDefault();
 });
 
+/*------ Reset password -------*/
+
 $('.reset-password').click(function () {
   var email = $('.login-welcome input[type="email"]').val();
   fb.resetPassword({
@@ -146,6 +152,34 @@ $('.reset-password').click(function () {
       alert(err.toString());
     } else {
       alert('Check your email!');
+      window.location = '/reset_password.html'
     }
   });
 });
+
+/*------ Reset password -------*/
+
+$('.to-reset-password form').submit(function () {
+  var email = fb.getAuth().password.email;
+  var oldPw = $('.to-reset-password input:nth-child(1)').val();
+  var newPw = $('.to-reset-password input:nth-child(2)').val();
+
+  fb.changePassword({
+    email: email,
+    oldPassword: oldPw,
+    newPassword: newPw
+  }, function(err) {
+    if (err) {
+      alert(err.toString());
+    } else {
+      fb.unauth();
+      window.location = '/';
+    }
+  });
+
+  event.preventDefault();
+})
+
+$(".cancel").click(function() {
+  window.location = '/login.html'
+})
