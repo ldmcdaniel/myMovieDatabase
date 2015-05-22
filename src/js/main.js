@@ -1,5 +1,6 @@
 var API_URL = "http://www.omdbapi.com/?t=";
 var FIREBASE_URL = "https://nssmovies.firebaseio.com/movies.json";
+var FIREBASE_short = "https://nssmovies.firebaseio.com/";
 var fb = new Firebase("https://nssmovies.firebaseio.com/");
 $(".addMovie").hide();
 //$(".movie-collection").hide();
@@ -29,15 +30,32 @@ $(".submit").click(function() {
 })//End of submit.click function
 
 /*------ Add to Firebase & Table -------*/
+
+// $('.onLoggedIn form').submit(function () {
+//   var url = $('.onLoggedIn input[type="url"]').val();
+//   var uid = fb.getAuth().uid;
+//   var token = fb.getAuth().token;
+//   var postUrl = `${FIREBASE_URL}/users/${uid}/fotos.json?auth=${token}`;
+
+//   $.post(postUrl, JSON.stringify(url), function (res) {
+//     addPhotosToDom({url: url});
+//     clearForms();
+//     // res = { name: '-Jk4dfDd123' }
+//   });
+//   event.preventDefault();
+// })
+
 $(".addMovie").click(function() {
-  //$(".movie-collection").show();
   var $input = $(".movie")
     .val()
     .split(" ")
     .join("+");
   var url = API_URL + $input + "&y=&plot=short&r=json";
+  var uid = fb.getAuth().uid;
+  var token = fb.getAuth().token;
+  var postUrl = `${FIREBASE_short}/users/${uid}/movies.json?auth=${token}`;
   $.get(url, function(data) {
-    $.post(FIREBASE_URL, JSON.stringify(data), function (res) {
+    $.post(postUrl, JSON.stringify(data), function (res) {
       addMovieData(data, res.name);
     });//End of .post
   }, 'jsonp'); //End of .get
@@ -106,7 +124,7 @@ $('.login-welcome form').submit(function () {
 function saveAuthData (authData) {
   $.ajax({
     method: 'PUT',
-    url: `${"https://nssmovies.firebaseio.com/"}/users/${authData.uid}/profile.json`,
+    url: `${FIREBASE_short}/users/${authData.uid}/profile.jsonauth=${authData.token}`,
     data: JSON.stringify(authData)
   });
 }
