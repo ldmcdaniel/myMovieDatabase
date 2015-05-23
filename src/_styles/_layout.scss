@@ -2,6 +2,37 @@ body {
   margin: auto;
   padding: 0;
 }
+.container {
+  margin: auto;
+  width: 80%;
+}
+
+/*---------- Movie Lookup ----------*/
+
+.movie-info {
+  width: 65%;
+  float: left;
+}
+.rating,
+.title {
+  display: inline-block;
+}
+.rating {
+  border: 1px solid black;
+  margin-left: 60px;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+.movie-poster {
+  width: 30%;
+  float: right;
+  padding-top: 20px;
+  text-align: right;
+  padding: 20px;
+}
+
+/*---------- Movie Lookup ----------*/
+
 table {
   width: 100%;
   margin: auto;
@@ -15,41 +46,3 @@ th {
   width: 90px;
   height: 120px;
 }
-.movie-info {
-  width: 65%;
-  float: left;
-}
-.movie-poster {
-  width: 30%;
-  float: right;
-  padding-top: 20px;
-  text-align: right;
-  padding: 20px;
-}
-.container {
-  margin: auto;
-  width: 80%;
-}
-.rating {
-  border: 1px solid black;
-  margin-left: 60px;
-  border-radius: 5px;
-  padding: 1px 5px;
-}
-.rating,
-.title {
-  display: inline-block;
-}
-.login-welcome,
-.to-reset-password {
-  width: 55%;
-  display: inline-block;
-  text-align: right;
-  margin-right: 0;
-}
-.movie-lookup {
-  width: 40%;
-  display: inline-block;
-  text-align: left;
-  margin-left: 0;
-  }

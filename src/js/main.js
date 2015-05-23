@@ -1,11 +1,14 @@
+/*------ Global Variables -------*/
+
 var API_URL = "http://www.omdbapi.com/?t=";
 var FIREBASE_URL = "https://nssmovies.firebaseio.com/movies.json";
 var FIREBASE_short = "https://nssmovies.firebaseio.com/";
 var fb = new Firebase("https://nssmovies.firebaseio.com/");
-$(".addMovie").hide();
-//$(".movie-collection").hide();
 
-/*------ Get JSON requests -------*/
+$(".addMovie").hide();
+
+/*------ Lookup a Movie -------*/
+
 $(".submit").click(function() {
   $(".movie-info").html("");
   $(".movie-poster").html("");
@@ -29,118 +32,6 @@ $(".submit").click(function() {
   })//End of .get request
 })//End of submit.click function
 
-/*------ Add to Firebase & Table -------*/
-
-// $('.onLoggedIn form').submit(function () {
-//   var url = $('.onLoggedIn input[type="url"]').val();
-//   var uid = fb.getAuth().uid;
-//   var token = fb.getAuth().token;
-//   var postUrl = `${FIREBASE_URL}/users/${uid}/fotos.json?auth=${token}`;
-
-//   $.post(postUrl, JSON.stringify(url), function (res) {
-//     addPhotosToDom({url: url});
-//     clearForms();
-//     // res = { name: '-Jk4dfDd123' }
-//   });
-//   event.preventDefault();
-// })
-
-$(".addMovie").click(function() {
-  var $input = $(".movie")
-    .val()
-    .split(" ")
-    .join("+");
-  var url = API_URL + $input + "&y=&plot=short&r=json";
-  var uid = fb.getAuth().uid;
-  var token = fb.getAuth().token;
-  var postUrl = `${FIREBASE_short}/users/${uid}/movies.json?auth=${token}`;
-  $.get(url, function(data) {
-    $.post(postUrl, JSON.stringify(data), function (res) {
-      addMovieData(data, res.name);
-    });//End of .post
-  }, 'jsonp'); //End of .get
-}) //End of $addMovie.click
-
-function addMovieData(data, id) {
-  $(".movie-collection")
-    .append("<tr></tr>");
-  var $target = $("tr:last")
-    .attr("data-id", id)
-    .append("<td><img src='" + data.Poster + "' class='poster'></td>")
-    .append("<td>" + data.Title + "</td>")
-    .append("<td>" + data.Year + "</td>")
-    .append("<td>" + data.Rated + "</td>")
-    .append("</td><td><button type='text' class='btn btn-warning delete'>Remove</button></td></tr>");
-}
-/*------ Delete data from Firebase & Table -------*/
-
-$(".movie-collection").on('click', ".delete", function() {
-  var $mov = $(this).closest('tr');
-  var id = $mov.attr('data-id');
-  $mov.remove();
-  var deleteUrl = FIREBASE_URL.slice(0, -5) + '/' + id + '.json';
-
-  $.ajax({
-    url: deleteUrl,
-    type: 'DELETE'
-  })
-})
-
-/*------ Syncing previous movie table -------*/
-
-$.get(FIREBASE_URL, function(data) {
-  Object
-    .keys(data)
-    .forEach(function(id) {
-    addMovieData(data[id], id);
-  });
-});
-
-/*------ Login to Database -------*/
-
-function doLogin (email, password, cb) {
-  fb.authWithPassword({
-    email: email,
-    password: password
-  }, function (err, authData) {
-    if (err) {
-      alert(err.toString());
-    } else {
-      window.location = '/';
-      saveAuthData(authData);
-      typeof cb === 'function' && cb(authData);
-    }
-  });
-}
-
-$('.login-welcome form').submit(function () {
-  var email = $('.login-welcome input[type="email"]').val();
-  var password = $('.login-welcome input[type="password"]').val();
-
-  doLogin(email, password);
-  event.preventDefault();
-});
-
-function saveAuthData (authData) {
-  $.ajax({
-    method: 'PUT',
-    url: `${FIREBASE_short}/users/${authData.uid}/profile.jsonauth=${authData.token}`,
-    data: JSON.stringify(authData)
-  });
-}
-
-function clearLoginForm () {
-  $('input[type="email"]').val('');
-  $('input[type="password"]').val('');
-}
-
-/*------ Logout of Database -------*/
-
-$('.logout').click(function () {
-  fb.unauth();
-  window.location = '/login.html'
-})
-
 /*------ Register new user -------*/
 
 $('.register').click(function () {
@@ -158,6 +49,64 @@ $('.register').click(function () {
   });
   event.preventDefault();
 });
+
+/*------ Login to Database -------*/
+
+$('.login-welcome form').submit(function () {
+  var email = $('.login-welcome input[type="email"]').val();
+  var password = $('.login-welcome input[type="password"]').val();
+
+  doLogin(email, password);
+  event.preventDefault();
+});
+
+/*------ Syncing previous movie table -------*/
+
+$.get(FIREBASE_URL, function(data) {
+  Object
+    .keys(data)
+    .forEach(function(id) {
+    addMovieData(data[id], id);
+  });
+});
+
+/*------ Add to Firebase & Table -------*/
+
+$(".addMovie").click(function() {
+  var $input = $(".movie")
+    .val()
+    .split(" ")
+    .join("+");
+  var url = API_URL + $input + "&y=&plot=short&r=json";
+  var uid = fb.getAuth().uid;
+  var token = fb.getAuth().token;
+  var postUrl = `${FIREBASE_short}/users/${uid}/movies.json?auth=${token}`;
+  $.get(url, function(data) {
+    $.post(postUrl, JSON.stringify(data), function (res) {
+      addMovieData(data, res.name);
+    });//End of .post
+  }, 'jsonp'); //End of .get
+}) //End of $addMovie.click
+
+/*------ Delete data from Firebase & Table -------*/
+
+$(".movie-collection").on('click', ".delete", function() {
+  var $mov = $(this).closest('tr');
+  var id = $mov.attr('data-id');
+  $mov.remove();
+  var deleteUrl = FIREBASE_URL.slice(0, -5) + '/' + id + '.json';
+  $.ajax({
+    url: deleteUrl,
+    type: 'DELETE'
+  })
+})
+
+/*------ Logout of Database -------*/
+
+$('.logout').click(function () {
+  fb.unauth();
+  window.location = '/login.html'
+})
 
 /*------ Reset password -------*/
 
@@ -201,3 +150,45 @@ $('.to-reset-password form').submit(function () {
 $(".cancel").click(function() {
   window.location = '/login.html'
 })
+
+/*------ Functions -------*/
+
+function doLogin (email, password, cb) {
+  fb.authWithPassword({
+    email: email,
+    password: password
+  }, function (err, authData) {
+    if (err) {
+      alert(err.toString());
+    } else {
+      window.location = '/';
+      saveAuthData(authData);
+      typeof cb === 'function' && cb(authData);
+    }
+  });
+}
+
+function saveAuthData (authData) {
+  $.ajax({
+    method: 'PUT',
+    url: `${FIREBASE_short}/users/${authData.uid}/profile.jsonauth=${authData.token}`,
+    data: JSON.stringify(authData)
+  });
+}
+
+function clearLoginForm () {
+  $('input[type="email"]').val('');
+  $('input[type="password"]').val('');
+}
+
+function addMovieData(data, id) {
+  $(".movie-collection")
+    .append("<tr></tr>");
+  var $target = $("tr:last")
+    .attr("data-id", id)
+    .append("<td><img src='" + data.Poster + "' class='poster'></td>")
+    .append("<td>" + data.Title + "</td>")
+    .append("<td>" + data.Year + "</td>")
+    .append("<td>" + data.Rated + "</td>")
+    .append("</td><td><button type='text' class='btn btn-warning delete'>Remove</button></td></tr>");
+}
