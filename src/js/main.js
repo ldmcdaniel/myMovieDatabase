@@ -1,13 +1,14 @@
 /*------ Global Variables -------*/
 
 var API_URL = "http://www.omdbapi.com/?t=";
-var FIREBASE_URL = "https://nssmovies.firebaseio.com/movies.json";
-var FIREBASE_short = "https://nssmovies.firebaseio.com/";
-var fb = new Firebase("https://nssmovies.firebaseio.com/");
+var FIREBASE_URL = "https://nssmovies.firebaseio.com/";
+var fb = new Firebase(FIREBASE_URL);
 
 $(".addMovie").hide();
 
-/*------ Lookup a Movie -------*/
+/*---------- OMDB ----------*/
+
+  /*------ Lookup a Movie -------*/
 
 $(".submit").click(function() {
   $(".movie-info").html("");
@@ -32,7 +33,7 @@ $(".submit").click(function() {
   })//End of .get request
 })//End of submit.click function
 
-/*------ Register new user -------*/
+  /*------ Register new user -------*/
 
 $('.register').click(function () {
   var email = $('.login-welcome input[type="email"]').val();
@@ -50,7 +51,7 @@ $('.register').click(function () {
   event.preventDefault();
 });
 
-/*------ Login to Database -------*/
+  /*------ Login to Database -------*/
 
 $('.login-welcome form').submit(function () {
   var email = $('.login-welcome input[type="email"]').val();
@@ -60,17 +61,23 @@ $('.login-welcome form').submit(function () {
   event.preventDefault();
 });
 
-/*------ Syncing previous movie table -------*/
+/*---------- FIREBASE ----------*/
 
-$.get(FIREBASE_URL, function(data) {
-  Object
-    .keys(data)
-    .forEach(function(id) {
-    addMovieData(data[id], id);
+  /*------ Syncing previous movie table -------*/
+fb.onAuth(function() {
+  var uid = fb.getAuth().uid;
+  var token = fb.getAuth().token;
+  var postUrl = `${FIREBASE_URL}/users/${uid}/movies.json?auth=${token}`
+  $.get(postUrl, function(data) {
+    Object
+      .keys(data)
+      .forEach(function(id) {
+      addMovieData(data[id], id);
+    });
   });
-});
+})
 
-/*------ Add to Firebase & Table -------*/
+  /*------ Add to Firebase & Table -------*/
 
 $(".addMovie").click(function() {
   var $input = $(".movie")
@@ -80,7 +87,7 @@ $(".addMovie").click(function() {
   var url = API_URL + $input + "&y=&plot=short&r=json";
   var uid = fb.getAuth().uid;
   var token = fb.getAuth().token;
-  var postUrl = `${FIREBASE_short}/users/${uid}/movies.json?auth=${token}`;
+  var postUrl = `${FIREBASE_URL}/users/${uid}/movies.json?auth=${token}`;
   $.get(url, function(data) {
     $.post(postUrl, JSON.stringify(data), function (res) {
       addMovieData(data, res.name);
@@ -88,13 +95,15 @@ $(".addMovie").click(function() {
   }, 'jsonp'); //End of .get
 }) //End of $addMovie.click
 
-/*------ Delete data from Firebase & Table -------*/
+  /*------ Delete data from Firebase & Table -------*/
 
 $(".movie-collection").on('click', ".delete", function() {
   var $mov = $(this).closest('tr');
   var id = $mov.attr('data-id');
   $mov.remove();
-  var deleteUrl = FIREBASE_URL.slice(0, -5) + '/' + id + '.json';
+  var uid = fb.getAuth().uid;
+  var token = fb.getAuth().token;
+  var deleteUrl = FIREBASE_URL + '/users/' + uid + '/movies/' + id + '.json?auth=' + token;
   $.ajax({
     url: deleteUrl,
     type: 'DELETE'
@@ -171,7 +180,7 @@ function doLogin (email, password, cb) {
 function saveAuthData (authData) {
   $.ajax({
     method: 'PUT',
-    url: `${FIREBASE_short}/users/${authData.uid}/profile.jsonauth=${authData.token}`,
+    url: `${FIREBASE_URL}/users/${authData.uid}/profile.jsonauth=${authData.token}`,
     data: JSON.stringify(authData)
   });
 }
