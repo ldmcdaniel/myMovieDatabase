@@ -3,7 +3,7 @@
 var API_URL = "http://www.omdbapi.com/?t=";
 var FIREBASE_URL = "https://nssmovies.firebaseio.com/";
 var fb = new Firebase(FIREBASE_URL);
-
+var initload = true;
 $(".addMovie").hide();
 
 /*---------- OMDB ----------*/
@@ -11,9 +11,13 @@ $(".addMovie").hide();
   /*------ Lookup a Movie -------*/
 
 $(".submit").click(function() {
+  var $movieSeachField = $(".movie");
+  var $submitButton =  $(".submit");
+  $movieSeachField.prop("disabled", true);
+  $submitButton.attr("disabled", true).html("Searching...");
   $(".movie-info").html("");
   $(".movie-poster").html("");
-  var $input = $(".movie")
+  var $input = $movieSeachField
     .val()
     .split(" ")
     .join("+");
@@ -30,6 +34,8 @@ $(".submit").click(function() {
     $(".movie-poster")
       .append("<img src='" + data.Poster + "'</img>");
     $(".addMovie").show();
+    $movieSeachField.prop("disabled", false);
+    $submitButton.attr("disabled", false).html("Enter Movie Title");
   })//End of .get request
 })//End of submit.click function
 
@@ -64,17 +70,26 @@ $('.login-welcome form').submit(function () {
 /*---------- FIREBASE ----------*/
 
   /*------ Syncing previous movie table -------*/
-fb.onAuth(function() {
-  var uid = fb.getAuth().uid;
-  var token = fb.getAuth().token;
-  var postUrl = `${FIREBASE_URL}/users/${uid}/movies.json?auth=${token}`
-  $.get(postUrl, function(data) {
-    Object
-      .keys(data)
-      .forEach(function(id) {
-      addMovieData(data[id], id);
+
+fb.onAuth(function(authData) {
+  if (authData && authData.password.isTemporaryPassword) {
+    window.location = '/reset_password.html'
+  } else if (authData) {
+    var uid = fb.getAuth().uid;
+    var token = fb.getAuth().token;
+    var postUrl = `${FIREBASE_URL}/users/${uid}/movies.json?auth=${token}`
+    $.get(postUrl, function(data) {
+      if (data) {
+        Object
+        .keys(data)
+        .forEach(function(id) {
+          addMovieData(data[id], id);
+        });
+      } else {
+        alert("Add movies to your database to save them.")
+      }
     });
-  });
+  }
 })
 
   /*------ Add to Firebase & Table -------*/
@@ -92,6 +107,7 @@ $(".addMovie").click(function() {
     $.post(postUrl, JSON.stringify(data), function (res) {
       addMovieData(data, res.name);
     });//End of .post
+    $('input[type="text"]').val('');
   }, 'jsonp'); //End of .get
 }) //End of $addMovie.click
 
@@ -113,8 +129,8 @@ $(".movie-collection").on('click', ".delete", function() {
 /*------ Logout of Database -------*/
 
 $('.logout').click(function () {
+  window.location = '/';
   fb.unauth();
-  window.location = '/login.html'
 })
 
 /*------ Reset password -------*/
@@ -170,14 +186,14 @@ function doLogin (email, password, cb) {
     if (err) {
       alert(err.toString());
     } else {
-      window.location = '/';
+      window.location = '/home.html';
       saveAuthData(authData);
       typeof cb === 'function' && cb(authData);
     }
   });
 }
 
-function saveAuthData (authData) {
+function saveAuthData(authData) {
   $.ajax({
     method: 'PUT',
     url: `${FIREBASE_URL}/users/${authData.uid}/profile.jsonauth=${authData.token}`,
