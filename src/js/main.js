@@ -3,12 +3,10 @@
 var API_URL = "http://www.omdbapi.com/?t=";
 var FIREBASE_URL = "https://nssmovies.firebaseio.com/";
 var fb = new Firebase(FIREBASE_URL);
-var initload = true;
+var movies;
 $(".addMovie").hide();
 
-/*---------- OMDB ----------*/
-
-  /*------ Lookup a Movie -------*/
+/*------ Lookup a Movie -------*/
 
 $(".submit").click(function() {
   var $movieSeachField = $(".movie");
@@ -39,7 +37,54 @@ $(".submit").click(function() {
   })//End of .get request
 })//End of submit.click function
 
-  /*------ Register new user -------*/
+/*------ Add to Firebase & Table -------*/
+
+$(".addMovie").click(function() {
+  var $input = $(".movie").val().split(" ").join("+");
+  var url = API_URL + $input + "&y=&plot=short&r=json";
+  var postUrl = fb.child(`users/${fb.getAuth().uid}/movies`);
+  $.get(url, function(data) {
+    postUrl.push(data);
+    $('input[type="text"]').val('');
+  });
+})
+
+/*------ Syncing previous movie table -------*/
+
+fb.onAuth(function(authData) {
+  if (authData && authData.password.isTemporaryPassword) {
+    window.location = '/reset_password.html'
+  } else if (authData) {
+  var postUrl = fb.child(`users/${fb.getAuth().uid}/movies`);
+    postUrl.on("child_added", function(snapshot) {
+      addMovieData(snapshot.val(), snapshot.key());
+    })
+  }
+})
+
+function addMovieData(data, id) {
+  $(".movie-collection")
+    .append("<tr></tr>");
+  var $target = $("tr:last")
+    .attr("data-id", id)
+    .append("<td><img src='" + data.Poster + "' class='poster'></td>")
+    .append("<td>" + data.Title + "</td>")
+    .append("<td>" + data.Year + "</td>")
+    .append("<td>" + data.Rated + "</td>")
+    .append("</td><td><button type='text' class='btn btn-warning delete'>Remove</button></td></tr>");
+}
+
+/*------ Delete data from Firebase & Table -------*/
+
+$(".movie-collection").on('click', ".delete", function() {
+  var $mov = $(this).closest('tr');
+  var id = $mov.attr('data-id');
+  $mov.remove();
+  var deleteUrl = fb.child(`users/${fb.getAuth().uid}/movies/${id}`);
+  deleteUrl.remove();
+})
+
+/*------ Register new user -------*/
 
 $('.register').click(function () {
   var email = $('.login-welcome input[type="email"]').val();
@@ -57,7 +102,7 @@ $('.register').click(function () {
   event.preventDefault();
 });
 
-  /*------ Login to Database -------*/
+/*------ Login to Database -------*/
 
 $('.login-welcome form').submit(function () {
   var email = $('.login-welcome input[type="email"]').val();
@@ -66,65 +111,6 @@ $('.login-welcome form').submit(function () {
   doLogin(email, password);
   event.preventDefault();
 });
-
-/*---------- FIREBASE ----------*/
-
-  /*------ Syncing previous movie table -------*/
-
-fb.onAuth(function(authData) {
-  if (authData && authData.password.isTemporaryPassword) {
-    window.location = '/reset_password.html'
-  } else if (authData) {
-    var uid = fb.getAuth().uid;
-    var token = fb.getAuth().token;
-    var postUrl = `${FIREBASE_URL}/users/${uid}/movies.json?auth=${token}`
-    $.get(postUrl, function(data) {
-      if (data) {
-        Object
-        .keys(data)
-        .forEach(function(id) {
-          addMovieData(data[id], id);
-        });
-      } else {
-        alert("Add movies to your database to save them.")
-      }
-    });
-  }
-})
-
-  /*------ Add to Firebase & Table -------*/
-
-$(".addMovie").click(function() {
-  var $input = $(".movie")
-    .val()
-    .split(" ")
-    .join("+");
-  var url = API_URL + $input + "&y=&plot=short&r=json";
-  var uid = fb.getAuth().uid;
-  var token = fb.getAuth().token;
-  var postUrl = `${FIREBASE_URL}/users/${uid}/movies.json?auth=${token}`;
-  $.get(url, function(data) {
-    $.post(postUrl, JSON.stringify(data), function (res) {
-      addMovieData(data, res.name);
-    });//End of .post
-    $('input[type="text"]').val('');
-  }, 'jsonp'); //End of .get
-}) //End of $addMovie.click
-
-  /*------ Delete data from Firebase & Table -------*/
-
-$(".movie-collection").on('click', ".delete", function() {
-  var $mov = $(this).closest('tr');
-  var id = $mov.attr('data-id');
-  $mov.remove();
-  var uid = fb.getAuth().uid;
-  var token = fb.getAuth().token;
-  var deleteUrl = FIREBASE_URL + '/users/' + uid + '/movies/' + id + '.json?auth=' + token;
-  $.ajax({
-    url: deleteUrl,
-    type: 'DELETE'
-  })
-})
 
 /*------ Logout of Database -------*/
 
@@ -194,26 +180,11 @@ function doLogin (email, password, cb) {
 }
 
 function saveAuthData(authData) {
-  $.ajax({
-    method: 'PUT',
-    url: `${FIREBASE_URL}/users/${authData.uid}/profile.jsonauth=${authData.token}`,
-    data: JSON.stringify(authData)
-  });
+  var ref = fb.child(`users/${authData.uid}/profile`);
+  ref.set(authData);
 }
 
 function clearLoginForm () {
   $('input[type="email"]').val('');
   $('input[type="password"]').val('');
-}
-
-function addMovieData(data, id) {
-  $(".movie-collection")
-    .append("<tr></tr>");
-  var $target = $("tr:last")
-    .attr("data-id", id)
-    .append("<td><img src='" + data.Poster + "' class='poster'></td>")
-    .append("<td>" + data.Title + "</td>")
-    .append("<td>" + data.Year + "</td>")
-    .append("<td>" + data.Rated + "</td>")
-    .append("</td><td><button type='text' class='btn btn-warning delete'>Remove</button></td></tr>");
 }
