@@ -64,8 +64,8 @@ fb.onAuth(function(authData) {
 
 function addMovieData(data, id) {
   $(".movie-collection")
-    .append("<tr></tr>");
-  var $target = $("tr:last")
+    .prepend("<tr></tr>");
+  var $target = $(".movie-collection tr:first")
     .attr("data-id", id)
     .append("<td><img src='" + data.Poster + "' class='poster'></td>")
     .append("<td>" + data.Title + "</td>")
