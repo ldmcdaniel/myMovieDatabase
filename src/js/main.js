@@ -172,7 +172,7 @@ function doLogin (email, password, cb) {
     if (err) {
       alert(err.toString());
     } else {
-      window.location = '/home.html';
+      window.location = 'myMovieDatabase/home.html';
       saveAuthData(authData);
       typeof cb === 'function' && cb(authData);
     }
