@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Movie Database | Home</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="movie-lookup">
+          <form class="form-inline">
+            <input type="text" placeholder="Enter Movie Title" class="form-control movie">
+            <button type="button" placeholder="Lookup" class="btn btn-success submit">Lookup movie</button>
+            <button type="button" placeholder="Add to My Movies" class="btn btn-primary addMovie">Add to My Movies</button>
+          </form>
+        </div>
+        <div class="login-welcome">
+          <button type="submit" class="btn btn-danger logout">Logout</button>
+        </div>
+      </div>
+    </header>
+    <div class="container">
+      <h1>Welcome to My Movie Database!</h1>
+      <div class="movie-display">
+        <div class="movie-info"></div>
+        <div class="movie-poster"></div>
+        <table class="table-striped">
+          <thead>
+            <tr>
+              <th>Poster</th>
+              <th>Title</th>
+              <th>Year</th>
+              <th>Rating</th>
+              <th>Watched?</th>
+            </tr>
+          </thead>
+          <tbody class="movie-collection"></tbody>
+        </table>
+      </div>
+    </div>
+    <footer>
+      <p>Made with HTML, CSS, JavaScript, jQuery, Jade, Sass, Bower, Firebase, Bowcat, http-server, and Nodemon</p>
+    </footer>
+    <script src="https://cdn.firebase.com/js/client/2.2.5/firebase.js"></script>
+    <script src="lib/build.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
